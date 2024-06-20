@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+from bs4 import BeautifulSoup
 
 
 # Set up the WebDriver
@@ -43,7 +44,7 @@ try:
     combined_html = ""
     
     combined_html += '<div role="document" tabindex="0" class="outer_page_container">'
-
+    i = 1
     # Loop through each inner page, scroll to it if needed, and extract its HTML
     for page in inner_pages:
         combined_html += '<div class="outer_page only_ie6_border " style="width: 859px; height: 1117px;">'
@@ -55,7 +56,8 @@ try:
             WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "newpage"))
             )
-            print("FOUND")
+            print(f"{i} | FOUND")
+            i += 1
         except:
             print("Not Found")
 
@@ -77,9 +79,13 @@ try:
     combined_html += "</style>"
     combined_html += "</div>"
 
-    # Save the extracted HTML content to a file
+    # Prettify the combined HTML using BeautifulSoup
+    soup = BeautifulSoup(combined_html, 'html.parser')
+    pretty_html = soup.prettify()
+
+    # Save the prettified HTML content to a file
     with open("testcontent.html", "w", encoding='utf-8') as file:
-        file.write(combined_html)
+        file.write(pretty_html)
 
     print("Extracted HTML content saved to testcontent.html")
 finally:
